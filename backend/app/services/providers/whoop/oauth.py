@@ -39,6 +39,15 @@ class WhoopOAuth(BaseOAuthTemplate):
             default_scope=settings.whoop_default_scope,
         )
 
+    def _prepare_refresh_request(self, refresh_token: str) -> tuple[dict, dict]:
+        token_data, headers = super()._prepare_refresh_request(refresh_token)
+        # WHOOP returns a replacement refresh token only when offline is present.
+        scope = (self.credentials.default_scope or "offline").strip()
+        if "offline" not in scope.split():
+            scope = f"offline {scope}".strip()
+        token_data["scope"] = scope
+        return token_data, headers
+
     # OAuth configuration
     use_pkce: bool = False  # Whoop doesn't require PKCE
     auth_method: AuthenticationMethod = AuthenticationMethod.BODY  # Based on Whoop API docs, credentials in body
