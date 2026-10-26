@@ -25,6 +25,8 @@ jobs:
   # a dispatch can't move latest/nightly or overwrite a release/nightly-<sha>
   # tag. TAG is passed via env, not inline ${{ }}, to avoid shell injection.
   validate:
+    # Docker Hub credentials only exist on upstream; forks deploy from source.
+    if: github.repository == 'the-momentum/open-wearables'
     runs-on: ubuntu-latest
     steps:
       - name: Validate manual tag
@@ -55,6 +57,8 @@ jobs:
 
   build:
     needs: validate
+    # Docker Hub credentials only exist on upstream; forks deploy from source.
+    if: github.repository == 'the-momentum/open-wearables'
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
     strategy:
@@ -140,6 +144,8 @@ jobs:
 
   merge:
     needs: build
+    # Docker Hub credentials only exist on upstream; forks deploy from source.
+    if: github.repository == 'the-momentum/open-wearables'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
